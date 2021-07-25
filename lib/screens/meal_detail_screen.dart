@@ -5,6 +5,27 @@ class MealDetailsScreen extends StatelessWidget {
   static const String screenTitle = '/map-details-screen';
   Meal meal;
 
+  Widget buildTitle(String text, BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.headline1,
+        ));
+  }
+
+  Widget buildList(Widget widget, BuildContext context) {
+    return Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.purple.shade200),
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        height: MediaQuery.of(context).size.height * 0.2,
+        width: MediaQuery.of(context).size.width * 0.7,
+        padding: const EdgeInsets.all(10.0),
+        child: widget);
+  }
+
   @override
   Widget build(BuildContext context) {
     Map<String, Object> args = ModalRoute.of(context).settings.arguments;
@@ -26,99 +47,48 @@ class MealDetailsScreen extends StatelessWidget {
                 Image.network(meal.imageUrl,
                     width: MediaQuery.of(context).size.width,
                     fit: BoxFit.cover),
-                Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'Ingredients',
-                      style: Theme.of(context).textTheme.headline1,
-                    )),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.purple.shade200),
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
-                  child: Column(children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    ...meal.ingredients
-                        .map((ingredient) => Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.yellow.shade700,
-                                  border: Border.all(color: Colors.white),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              padding: const EdgeInsets.all(6.0),
-                              margin: EdgeInsets.all(4),
-                              child: Text(
-                                ingredient,
-                              ),
-                            ))
-                        .toList(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                  ]),
-                ),
-                Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'Steps',
-                      style: Theme.of(context).textTheme.headline1,
-                    )),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.purple.shade200),
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
-                  child: Column(children: [
-                    ...meal.steps.map((step) {
-                      int index = meal.steps.indexOf(step);
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                                color: index != meal.steps.length - 1
-                                    ? Colors.black.withOpacity(0.1)
-                                    : Colors.black.withOpacity(0),
-                                width: 1),
+                buildTitle('Ingredients', context),
+                buildList(
+                    ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: meal.ingredients.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Theme.of(context).accentColor,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: Text(
+                              '${meal.ingredients[index]}',
+                            ),
                           ),
-                        ),
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        padding: const EdgeInsets.all(6.0),
-                        margin: EdgeInsets.all(4),
-                        child: Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                              alignment: Alignment.center,
-                              width: 45,
-                              height: 45,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.red.shade800),
-                              child: Text(
-                                '# ${index + 1}',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
-                              ),
-                            ),
-                            Container(
-                              child: Flexible(
-                                child: Text(
-                                  step,
+                        );
+                      },
+                    ),
+                    context),
+                buildTitle('Steps', context),
+                buildList(
+                    ListView.builder(
+                        itemBuilder: (context, index) {
+                          return Column(
+                            children: [
+                              ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.red,
+                                  child: Text(
+                                    '#${index + 1}',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                 ),
+                                title: Text(meal.steps[index]),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ]),
-                ),
+                              Divider()
+                            ],
+                          );
+                        },
+                        itemCount: meal.steps.length,
+                        padding: EdgeInsets.zero),
+                    context),
                 SizedBox(height: 30),
               ],
             ),
